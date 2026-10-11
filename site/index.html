@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAG retrieval demos: chunking and semantic search in your browser</title>
+<meta name="description" content="Two interactive demos of the retrieval half of RAG. Chunk a document or an Obsidian vault, then ask questions and see which chunks come back. Everything runs in your browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23161b22'/%3E%3Cpath d='M6 10h8v4H6zM18 10h8v4h-8zM6 18h12v4H6z' fill='%2342d4c4'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <h1>RAG retrieval demos</h1>
+  <p class="lede">Retrieval is the first half of RAG: split text into chunks, turn each chunk into a vector, and find the ones closest in meaning to a question. These two pages let you watch that happen. Nothing is uploaded; your files stay in your browser.</p>
+
+  <div class="cards">
+    <a class="card" href="/demo/">
+      <span class="kicker">Demo 1</span>
+      <h2>Document demo</h2>
+      <p>Drop in a single file, watch it get chunked by size or by meaning, then ask a question and compare semantic search with keyword search.</p>
+      <ul>
+        <li>.txt, .md, .csv and .pdf</li>
+        <li>Fixed-size and semantic chunking</li>
+        <li>Semantic vs keyword side by side</li>
+      </ul>
+      <span class="go">Open the document demo &rarr;</span>
+    </a>
+    <a class="card" href="/vault/">
+      <span class="kicker">Demo 2</span>
+      <h2>Obsidian vault demo</h2>
+      <p>Drop in a vault folder (or try the built-in sample). Notes are split along their own headings, and every result tells you which note and section it came from.</p>
+      <ul>
+        <li>Folder drop, frontmatter and wikilinks handled</li>
+        <li>Chunk by heading vs fixed size</li>
+        <li>Results labelled with note and heading path</li>
+      </ul>
+      <span class="go">Open the vault demo &rarr;</span>
+    </a>
+  </div>
+
+  <footer>Embeddings: <a href="https://huggingface.co/Xenova/all-MiniLM-L6-v2">all-MiniLM-L6-v2</a> (quantized, 23 MB) via <a href="https://github.com/huggingface/transformers.js">transformers.js</a>, run in your browser. The model downloads on first use (about 50 MB with the runtime) and is cached afterwards. Retrieval only; no LLM writes an answer on these pages.</footer>
+</main>
+</body>
+</html>

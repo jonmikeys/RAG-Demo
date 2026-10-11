@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAG retrieval demo: see how a document gets chunked and searched</title>
+<meta name="description" content="Drop in a document, watch it get chunked, then ask a question and see which chunk semantic search retrieves. Runs entirely in your browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23161b22'/%3E%3Cpath d='M6 10h8v4H6zM18 10h8v4h-8zM6 18h12v4H6z' fill='%2342d4c4'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <p class="back"><a href="/">&larr; All demos</a></p>
+  <h1>Document demo</h1>
+  <p class="lede">Retrieval is the first half of RAG: split a document into chunks, turn each chunk into a vector, and find the ones closest in meaning to a question. This page runs all of it in your browser. Files never leave your machine.</p>
+
+  <section aria-labelledby="h1s">
+    <h2 id="h1s"><span class="n">1</span> Add a document</h2>
+    <p class="sub">Plain text, Markdown, CSV or PDF, up to 10 MB. Only the first 60,000 characters are used.</p>
+    <label class="drop" id="drop">
+      <input type="file" id="file" accept=".txt,.md,.markdown,.csv,.log,.pdf,text/*,application/pdf">
+      <strong>Drop a file here, or click to choose one</strong>
+      <span id="dropname">No file selected</span>
+    </label>
+    <div class="row" style="margin-top:12px">
+      <button type="button" id="sample">Use the sample handbook</button>
+      <span class="chip" id="model" data-s="idle" role="status" aria-live="polite"><i class="dot"></i><span id="modeltext">Embedding model: waiting</span></span>
+    </div>
+    <div class="bar" id="bar" role="progressbar" aria-label="Progress"><i></i></div>
+    <p id="msg" role="alert"></p>
+  </section>
+
+  <section aria-labelledby="h2s">
+    <h2 id="h2s"><span class="n">2</span> See how it gets chunked</h2>
+    <p class="sub">A chunk is the unit that gets embedded and retrieved. Change the strategy and the chunks redraw instantly.</p>
+    <div class="row gap" style="margin-bottom:14px">
+      <div class="seg-toggle" role="radiogroup" aria-label="Chunking strategy">
+        <label><input type="radio" name="mode" value="fixed" checked> Fixed size</label>
+        <label><input type="radio" name="mode" value="semantic"> Semantic</label>
+      </div>
+      <span class="sub" id="modehelp" style="margin:0">Cuts every N characters, with overlap so ideas on a boundary appear in both chunks.</span>
+    </div>
+    <div class="ctl" id="ctl-fixed">
+      <label>Chunk size: <output id="o-size">300</output> characters<input type="range" id="size" min="150" max="1500" step="50" value="300"></label>
+      <label>Overlap: <output id="o-ov">50</output> characters<input type="range" id="ov" min="0" max="250" step="10" value="50"></label>
+    </div>
+    <div class="ctl" id="ctl-sem" hidden>
+      <label>Sensitivity: cut at the weakest <output id="o-pct">20</output>% of sentence transitions<input type="range" id="pct" min="5" max="50" step="1" value="20"></label>
+    </div>
+    <div class="stats" id="stats" aria-live="polite"></div>
+    <div id="viz" hidden>
+      <div class="vizlabel">Document map <span style="text-transform:none;letter-spacing:0">(two lanes so overlaps show; click a chunk)</span></div>
+      <div id="map"></div>
+      <div id="chartwrap" hidden>
+        <div class="vizlabel">Similarity between each sentence and the next (dips below the dashed line become cuts)</div>
+        <svg id="chart" viewBox="0 0 800 130" role="img" aria-label="Line chart of similarity between neighbouring sentences with cut points"></svg>
+      </div>
+      <div class="vizlabel">Document text, coloured by chunk</div>
+      <div id="doc" tabindex="0" aria-label="Document text coloured by chunk"></div>
+      <p class="legend" id="legend"></p>
+    </div>
+  </section>
+
+  <section aria-labelledby="h3s">
+    <h2 id="h3s"><span class="n">3</span> Ask for a chunk</h2>
+    <p class="sub">Ask a question in your own words. It gets embedded the same way as the chunks and compared by cosine similarity.</p>
+    <form id="ask">
+      <input type="text" id="q" placeholder="Load a document first" aria-label="Your question" autocomplete="off" disabled>
+      <select id="how" aria-label="Search method" disabled>
+        <option value="sem">Semantic</option>
+        <option value="kw">Keyword (BM25)</option>
+        <option value="both" selected>Compare both</option>
+      </select>
+      <button class="primary" id="go" disabled>Retrieve</button>
+    </form>
+    <div class="sugg" id="sugg" hidden></div>
+  </section>
+
+  <section aria-labelledby="h4s">
+    <h2 id="h4s"><span class="n">4</span> Retrieved chunks</h2>
+    <p class="sub">Top three matches. Click a result to find it in the document above.</p>
+    <div id="results"><div class="empty">Results appear here after you ask a question.</div></div>
+  </section>
+
+  <footer>Embeddings: <a href="https://huggingface.co/Xenova/all-MiniLM-L6-v2">all-MiniLM-L6-v2</a> (quantized, 23 MB) via <a href="https://github.com/huggingface/transformers.js">transformers.js</a>. PDF text via <a href="https://mozilla.github.io/pdf.js/">pdf.js</a>. Retrieval only; no LLM writes an answer on this page.</footer>
+</main>
+<script type="importmap">{"imports":{"onnxruntime-web/webgpu":"/vendor/ort/ort.webgpu.bundle.min.mjs","onnxruntime-common":"/vendor/ort/ort.webgpu.bundle.min.mjs"}}</script>
+<script type="module" src="/demo/app.js"></script>
+</body>
+</html>

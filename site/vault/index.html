@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Obsidian vault RAG demo: chunk notes by heading and search them</title>
+<meta name="description" content="Drop an Obsidian vault, see notes split along their own headings, then ask a question and see which note and section it comes from. Runs entirely in your browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23161b22'/%3E%3Cpath d='M6 10h8v4H6zM18 10h8v4h-8zM6 18h12v4H6z' fill='%2342d4c4'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <p class="back"><a href="/">&larr; All demos</a></p>
+  <h1>Obsidian vault demo</h1>
+  <p class="lede">Notes already have structure: headings mark where one idea ends and the next begins. This page splits each note along its headings, labels every chunk with its note and section, and lets you compare that against blind fixed-size chunking. Your vault never leaves this browser tab.</p>
+
+  <section aria-labelledby="h1s">
+    <h2 id="h1s"><span class="n">1</span> Add a vault</h2>
+    <p class="sub">Drop your vault folder, or choose it. Only <code>.md</code> notes are read; hidden folders such as <code>.obsidian</code> are skipped. Folder drop needs a desktop browser. Your browser may say "upload": the files stay local.</p>
+    <label class="drop" id="drop">
+      <input type="file" id="folder" webkitdirectory>
+      <strong>Drop a vault folder here, or click to choose one</strong>
+      <span id="dropname">No vault loaded</span>
+    </label>
+    <div class="row" style="margin-top:12px">
+      <button type="button" id="sample">Use the sample vault</button>
+      <button type="button" id="pick">Choose .md files instead</button>
+      <input type="file" id="files" accept=".md,.markdown,text/markdown" multiple hidden>
+      <span class="chip" id="model" data-s="idle" role="status" aria-live="polite"><i class="dot"></i><span id="modeltext">Embedding model: waiting</span></span>
+    </div>
+    <div class="bar" id="bar" role="progressbar" aria-label="Progress"><i></i></div>
+    <p id="msg" role="alert"></p>
+    <p class="sub" id="loaded" style="margin:8px 0 0"></p>
+  </section>
+
+  <section aria-labelledby="h2s" id="chunking" hidden>
+    <h2 id="h2s"><span class="n">2</span> See how the notes get chunked</h2>
+    <p class="sub">Pick a strategy. Both are computed from the same notes, so the numbers below compare them directly.</p>
+    <div class="row gap" style="margin-bottom:14px">
+      <div class="seg-toggle" role="radiogroup" aria-label="Chunking strategy">
+        <label><input type="radio" name="mode" value="heading" checked> By heading</label>
+        <label><input type="radio" name="mode" value="fixed"> Fixed size</label>
+      </div>
+      <label class="chk"><input type="checkbox" id="prefix" checked> Add note title and heading path to each chunk before embedding</label>
+    </div>
+    <div class="cmp" id="cmp"></div>
+    <div class="row" style="margin-bottom:10px">
+      <label for="notesel" class="sub" style="margin:0">Look inside a note:</label>
+      <select id="notesel" class="notelist" aria-label="Choose a note to inspect"></select>
+    </div>
+    <div class="stats" id="notemeta"></div>
+    <div id="map" aria-label="Chunk map of this note"></div>
+    <div class="vizlabel">Note text, coloured by chunk (headings in bold)</div>
+    <div id="doc" tabindex="0" aria-label="Note text coloured by chunk"></div>
+    <p class="legend" id="legend"></p>
+  </section>
+
+  <section aria-labelledby="h3s" id="asking" hidden>
+    <h2 id="h3s"><span class="n">3</span> Ask your vault</h2>
+    <p class="sub">The first search embeds every chunk, which takes a while for a big vault. After that, searches are instant.</p>
+    <form id="ask">
+      <input type="text" id="q" placeholder="Ask something your notes answer" aria-label="Your question" autocomplete="off">
+      <button class="primary" id="go">Retrieve</button>
+    </form>
+    <div class="sugg" id="sugg" hidden></div>
+  </section>
+
+  <section aria-labelledby="h4s" id="out" hidden>
+    <h2 id="h4s"><span class="n">4</span> Retrieved chunks</h2>
+    <p class="sub">Top three matches for each method. Click a result to open its note above.</p>
+    <div id="results"><div class="empty">Results appear here after you ask a question.</div></div>
+  </section>
+
+  <footer>Embeddings: <a href="https://huggingface.co/Xenova/all-MiniLM-L6-v2">all-MiniLM-L6-v2</a> (quantized) via <a href="https://github.com/huggingface/transformers.js">transformers.js</a>. The sample vault is made up. Obsidian syntax is cleaned before chunking: wikilinks become plain text, embeds, comments and Dataview blocks are dropped, and frontmatter is read for tags. Retrieval only; no LLM writes an answer here.</footer>
+</main>
+<script type="importmap">{"imports":{"onnxruntime-web/webgpu":"/vendor/ort/ort.webgpu.bundle.min.mjs","onnxruntime-common":"/vendor/ort/ort.webgpu.bundle.min.mjs"}}</script>
+<script type="module" src="/vault/app.js"></script>
+</body>
+</html>

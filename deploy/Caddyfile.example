@@ -1,0 +1,7 @@
+rag.example.com {
+    encode zstd gzip
+    root * /srv/rag            # the site/ directory
+    @heavy path /vendor/* /models/*
+    header @heavy Cache-Control "public, max-age=604800"
+    file_server
+}
